@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>page</title>
+    <link href="css/style.min.css" rel="stylesheet">
+    <style>
+        .imgboxF {
+            padding: 20px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 22px;
+        }
+
+        .imgbox {
+            width: 300px;
+            /* height: 250px; */
+        }
+
+        .imgbox img {
+            width: 300px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="lyear-layout-web">
+        <div class="lyear-layout-container">
+            <aside style="display: flex;flex-direction: column;">
+                <button type="button" style="margin-top: 100px;"><a href="page.html">active</a></button>
+                <button type="button" style="margin-top: 100px;"><a href="page1.html">serch</a></button>
+                <button type="button" style="margin-top: 100px;"><a href="page2.html">details</a></button>
+            </aside>
+            <main class="lyear-layout-content">
+                <div class="imgboxF">
+                    Welcome to the fundraising system
+                </div>
+                <div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>FUNDRAISER_ID</th>
+                                <th>ORGANIZER</th>
+                                <th>CAPTION</th>
+                                <th>TARGET_FUNDING</th>
+                                <th>CURRENT_FUNDING</th>
+                                <th>CITY</th>
+                                <th>ACTIVE</th>
+                                <th>CATEGORY_ID</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function ajax(obj) {
+            let type = obj.type;
+            let url = obj.url;
+            let callback = obj.callback;
+            let xhr = new XMLHttpRequest();
+            xhr.open(type, url);
+            xhr.send();
+            xhr.onreadystatechange = function () {
+                callback(JSON.parse(xhr.responseText));
+            }
+        }
+    </script>
+    <script type="text/javascript">
+        function init() {
+            console.log('init');
+            ajax({
+                url: "http://localhost:9001/api/getFundraisersListActive?active=Active",
+                // data: {name: 'jenny'},
+                type: "get",
+                //dataType: "json",
+                callback: function (data) {
+                    console.log(data);
+                    if (data.length) {
+                        let tbodyinnerHTML = ''
+                        data.map((item) => {
+                            tbodyinnerHTML += `<tr>
+                                <th>${item.FUNDRAISER_ID}</th>
+                                <th>${item.ORGANIZER}</th>
+                                <th>${item.CAPTION}</th>
+                                <th>${item.TARGET_FUNDING}</th>
+                                <th>${item.CURRENT_FUNDING}</th>
+                                <th>${item.CITY}</th>
+                                <th>${item.ACTIVE}</th>
+                                <th>${item.CATEGORY_ID}</th>
+                            </tr>`
+                        })
+                        document.getElementById("tbody").innerHTML = tbodyinnerHTML;
+                    }
+                }
+            });
+        };
+        init()
+    </script>
+</body>
+
+</html>

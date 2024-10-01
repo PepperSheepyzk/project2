@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>page1</title>
+    <link href="css/style.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="lyear-layout-web">
+        <div class="lyear-layout-container">
+            <aside style="display: flex;flex-direction: column;">
+                <button type="button" style="margin-top: 100px;"><a href="page.html">active</a></button>
+                <button type="button" style="margin-top: 100px;"><a href="page1.html">serch</a></button>
+                <button type="button" style="margin-top: 100px;"><a href="page2.html">details</a></button>
+            </aside>
+            <main class="lyear-layout-content">
+                <div class="container-fluid">
+                    <div class="row" style="display: flex;margin: 20px;">
+                        <div style="width: 40%;display: flex;width: 300px;align-items: center;">
+                            <label for="CATEGORY_ID">CATEGORY_ID:</label>
+                            <select name="CATEGORY_ID" id="CATEGORY_ID" style="width: 200px;">
+                            </select>
+                        </div>
+
+                        <div style="width: 40%;display: flex;width: 300px;align-items: center;">
+                            <label for="CITY">CITY:</label>
+                            <input type="text" id="CITY" name="CITY" value="" />(LiuZhou)
+                        </div>
+                        <div style="width: 40%;display: flex;width: 300px;align-items: center;">
+                            <button type="button" id="button2">query</button>
+                            <button type="button" id="button3" style="margin-left: 10px;">Clear</button>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>FUNDRAISER_ID</th>
+                                            <th>ORGANIZER</th>
+                                            <th>CAPTION</th>
+                                            <th>TARGET_FUNDING</th>
+                                            <th>CURRENT_FUNDING</th>
+                                            <th>CITY</th>
+                                            <th>ACTIVE</th>
+                                            <th>CATEGORY_ID</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody">
+                                        <!-- tbody -->
+                                    </tbody>
+                                </table>
+                                <div style="font-weight: bold;color: #f00;text-align: center;" id="note">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        </main>
+    </div>
+    </div>
+
+    <script type="text/javascript">
+        function ajax(obj) {
+            let type = obj.type;
+            let url = obj.url;
+            let callback = obj.callback;
+            let xhr = new XMLHttpRequest();
+            xhr.open(type, url);
+            xhr.send();
+            xhr.onreadystatechange = function () {
+                callback(JSON.parse(xhr.responseText));
+            }
+        }
+    </script>
+    <script type="text/javascript">
+        function init() {
+            console.log('init');
+            ajax({
+                url: "http://localhost:9001/api/getCategoriesList",
+                type: "get",
+                callback: function (data) {
+                    console.log(data);
+                    if (data.length) {
+                        let tbodyinnerHTML = ''
+                        data.map((item) => {
+                            tbodyinnerHTML += `<option value=${item.CATEGORY_ID}>${item.NAME}</option>`
+                        })
+                        document.getElementById("CATEGORY_ID").innerHTML = tbodyinnerHTML;
+                        document.getElementById('CITY').value = 'LiuZhou'
+                    }
+                }
+            });
+        };
+        init()
+        document.getElementById('button2').onclick = function () {
+            let CITY = document.getElementById('CITY').value
+            let CATEGORY_ID = document.getElementById('CATEGORY_ID').value
+            if (!CITY && !CATEGORY_ID) {
+                alert('must pick one or multiple criteria!')
+                return
+            }
+            ajax({
+                url: `http://localhost:9001/api/getFundraisersListByCriteria?CITY=${CITY}&CATEGORY_ID=${CATEGORY_ID}`,
+                type: "get",
+                callback: function (data) {
+                    console.log(data);
+                    let tbodyinnerHTML = ''
+                    if (data.length) {
+                        data.map((item) => {
+                            tbodyinnerHTML += `<tr>
+                                <th><a href="page2.html?${item.FUNDRAISER_ID}">${item.FUNDRAISER_ID}</a></th>
+                                <th>${item.ORGANIZER}</th>
+                                <th>${item.CAPTION}</th>
+                                <th>${item.TARGET_FUNDING}</th>
+                                <th>${item.CURRENT_FUNDING}</th>
+                                <th>${item.CITY}</th>
+                                <th>${item.ACTIVE}</th>
+                                <th>${item.CATEGORY_ID}</th>
+                            </tr>`
+                        })
+                        document.getElementById("tbody").innerHTML = tbodyinnerHTML;
+                        document.getElementById("note").innerHTML = '';
+                    } else {
+                        document.getElementById("tbody").innerHTML = '';
+                        document.getElementById("note").innerHTML = 'no fundraisers are found';
+                    }
+                }
+            });
+        };
+        document.getElementById('button3').onclick = function () {
+            document.getElementById('CITY').value = ''
+            document.getElementById('CATEGORY_ID').value = ''
+        };
+
+    </script>
+</body>
+
+</html>

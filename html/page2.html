@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>page</title>
+    <meta name="author" content="yinqi">
+    <link href="css/style.min.css" rel="stylesheet">
+    <style>
+        .box {
+            padding-top: 50px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .box .form-group {
+            width: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="lyear-layout-web">
+        <div class="lyear-layout-container">
+            <aside style="display: flex;flex-direction: column;">
+                <button type="button" style="margin-top: 100px;"><a href="page.html">active</a></button>
+                <button type="button" style="margin-top: 100px;"><a href="page1.html">serch</a></button>
+                <button type="button" style="margin-top: 100px;"><a href="page2.html">details</a></button>
+            </aside>
+            <main class="lyear-layout-content">
+                <div class="container-fluid">
+                    <div class="row" style="display: flex;">
+                        <div class="box" style="width: 60%;">
+                            <div class="form-group col-md-12">
+                                <label>FUNDRAISER_ID:</label>
+                                <span id="FUNDRAISER_ID"></span>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label>ORGANIZER:</label>
+                                <span id="ORGANIZER"></span>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label>CAPTION:</label>
+                                <span id="CAPTION"></span>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label>TARGET_FUNDING:</label>
+                                <span id="TARGET_FUNDING"></span>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label>CURRENT_FUNDING:</label>
+                                <span id="CURRENT_FUNDING"></span>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label>CITY:</label>
+                                <span id="CITY"></span>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label>ACTIVE:</label>
+                                <span id="ACTIVE"></span>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label>CATEGORY_ID:</label>
+                                <span id="CATEGORY_ID"></span>
+                            </div>
+                        </div>
+                        <div style="width: 40%;">
+                            <img id="imgsrc" src="" alt="">
+                        </div>
+                    </div>
+                    <div class="form-group col-md-24">
+                        <button type="button" id="Donate" class="btn btn-warning ajax-post"
+                            style="margin: 25px 100px 0 0;float: right;">Donate</button>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function ajax(obj) {
+            let type = obj.type;
+            let url = obj.url;
+            let callback = obj.callback;
+            let xhr = new XMLHttpRequest();
+            xhr.open(type, url);
+            xhr.send();
+            xhr.onreadystatechange = function () {
+                callback(JSON.parse(xhr.responseText));
+            }
+        }
+    </script>
+    <script type="text/javascript">
+        function init() {
+            console.log(location.search);
+            let param = location.search ? location.search.split('?') : ''
+            if (!param) {
+                return;
+            }
+            console.log('init');
+            ajax({
+                url: `http://localhost:9001/api/getFundraisersListByFUNDRAISERID?FUNDRAISER_ID=${param[1]}`,
+                type: "get",
+                callback: function (data) {
+                    console.log(data);
+                    if (data.length) {
+                        document.getElementById("FUNDRAISER_ID").innerHTML = data[0].FUNDRAISER_ID;
+                        document.getElementById("ORGANIZER").innerHTML = data[0].ORGANIZER;
+                        document.getElementById("CAPTION").innerHTML = data[0].CAPTION;
+                        document.getElementById("TARGET_FUNDING").innerHTML = data[0].TARGET_FUNDING;
+                        document.getElementById("CURRENT_FUNDING").innerHTML = data[0].CURRENT_FUNDING;
+                        document.getElementById("CITY").innerHTML = data[0].CITY;
+                        document.getElementById("ACTIVE").innerHTML = data[0].ACTIVE;
+                        document.getElementById("CATEGORY_ID").innerHTML = data[0].CATEGORY_ID;
+                        document.getElementById("imgsrc").src = './images/' + data[0].FUNDRAISER_ID + '.jpg';
+                    }
+                }
+            });
+        };
+        init()
+        document.getElementById('Donate').onclick = function () {
+            alert('This feature is under contruction')
+        };
+    </script>
+</body>
+
+</html>
